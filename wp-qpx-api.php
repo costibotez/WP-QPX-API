@@ -35,10 +35,20 @@ if ( ! defined( 'WPINC' ) ) {
  * This action is documented in includes/class-wp-qpx-api-activator.php
  */
 function activate_wp_qpx_api() {
+
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-qpx-api-activator.php';
 	Wp_Qpx_Api_Activator::activate();
 }
 
+add_action( 'admin_notices', 'qpx_activation_notice' );
+function qpx_activation_notice() {
+	if(!is_plugin_active('contact-form-7/wp-contact-form-7.php')) :
+    ?>
+    <div class="updated notice is-dismissible">
+        <p><?php _e('<strong>WP QPX API</strong> requires', 'wp-qpx-api'); ?> <a href="https://wordpress.org/plugins/contact-form-7/" target="_blank">Contact Form 7</a> <?php _e('plugin to be active!', 'wp-qpx-api'); ?> <strong><?php _e('You are awesome', 'wp-qpx-api'); ?></strong>.</p>
+    </div>
+    <?php endif;
+}
 /**
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-wp-qpx-api-deactivator.php
@@ -67,7 +77,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-wp-qpx-api.php';
  * @since    1.0.0
  */
 function run_wp_qpx_api() {
-
+	// exit;
 	$plugin = new Wp_Qpx_Api();
 	$plugin->run();
 

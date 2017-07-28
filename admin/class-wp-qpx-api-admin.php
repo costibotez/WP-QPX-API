@@ -41,6 +41,24 @@ class Wp_Qpx_Api_Admin {
 	private $version;
 
 	/**
+	 * The screen seetings hook suffix of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_screen_hook_suffix
+	 */
+	private $plugin_screen_hook_suffix;
+
+	/**
+	 * The options name to be used in this plugin
+	 *
+	 * @since  	1.0.0
+	 * @access 	private
+	 * @var  	string 		$option_name 	Option name of this plugin
+	 */
+	private static $option_name = 'qpx';
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -98,6 +116,86 @@ class Wp_Qpx_Api_Admin {
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-qpx-api-admin.js', array( 'jquery' ), $this->version, false );
 
+	}
+
+	/**
+	 * Add an options page under the Settings submenu
+	 *
+	 * @since  1.0.0
+	 */
+	public function add_options_page() {
+
+		$this->plugin_screen_hook_suffix = add_options_page(
+			__( 'WP QPX API', 'wp-qpx-api' ),
+			__( 'WP QPX API', 'wp-qpx-api' ),
+			'manage_options',
+			$this->plugin_name,
+			array( $this, 'display_options_page' )
+		);
+
+	}
+
+	/**
+	 * Render the options page for plugin
+	 *
+	 * @since  1.0.0
+	 */
+	public function display_options_page() {
+
+		include_once 'partials/wp-qpx-api-admin-display.php';
+
+	}
+
+	/**
+	 * Register plugin's options
+	 *
+	 * @since  1.0.0
+	 */
+	public function register_setting() {
+
+		// Add a General section
+		add_settings_section(
+			Wp_Qpx_Api_Admin::$option_name . '_general',
+			__( 'General', 'wp-qpx-api' ),
+			array( $this, Wp_Qpx_Api_Admin::$option_name . '_general_cb' ),
+			$this->plugin_name
+		);
+
+		add_settings_field(
+			Wp_Qpx_Api_Admin::$option_name . '_google_api_key',
+			__( 'Google API Key', 'wp-qpx-api' ),
+			array( $this, Wp_Qpx_Api_Admin::$option_name . '_google_api_key_cb' ),
+			$this->plugin_name,
+			Wp_Qpx_Api_Admin::$option_name . '_general',
+			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_google_api_key' )
+		);
+
+		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_google_api_key');
+
+	}
+
+	/**
+	 * Render the text for the general section
+	 *
+	 * @since  1.0.0
+	 */
+	public function qpx_general_cb() {
+
+		echo '<p>' . __( 'Please change the settings accordingly.', 'wp-qpx-api' ) . '</p>';
+
+	}
+
+	/**
+	 * Render the API Key field for qpx _google_api_key option
+	 *
+	 * @since  1.0.0
+	 */
+	public function qpx_google_api_key_cb() {
+
+		$google_api_key = get_option( Wp_Qpx_Api_Admin::$option_name . '_google_api_key' );
+		?>
+			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_key'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_key'; ?>" value="<?php echo $google_api_key; ?>" />
+		<?php
 	}
 
 }
