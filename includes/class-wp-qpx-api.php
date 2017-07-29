@@ -173,6 +173,7 @@ class Wp_Qpx_Api {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_action( 'init', $plugin_public, 'track_cf7_post' );
+		$this->loader->add_action( 'wp_footer', $plugin_public, 'add_this_script_footer' );
 
 	}
 

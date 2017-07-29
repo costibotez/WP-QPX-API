@@ -206,11 +206,21 @@ class Wp_Qpx_Api_Admin {
 			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_max_solutions' )
 		);
 
+		add_settings_field(
+			Wp_Qpx_Api_Admin::$option_name . '_listing_page',
+			__( 'Listing Page', 'wp-qpx-api' ),
+			array( $this, Wp_Qpx_Api_Admin::$option_name . '_listing_page_cb' ),
+			$this->plugin_name,
+			Wp_Qpx_Api_Admin::$option_name . '_general',
+			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_listing_page' )
+		);
+
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_google_api_key');
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_google_api_url');
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id');
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id');
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_max_solutions');
+		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_listing_page');
 
 	}
 
@@ -235,6 +245,7 @@ class Wp_Qpx_Api_Admin {
 		$google_api_key = get_option( Wp_Qpx_Api_Admin::$option_name . '_google_api_key' );
 		?>
 			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_key'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_key'; ?>" value="<?php echo $google_api_key; ?>" />
+			<p class="description">Your unique Google API key. You can generate one from <a href="https://console.developers.google.com/apis/credentials" target="_blank">here</a></p>
 		<?php
 	}
 
@@ -248,6 +259,7 @@ class Wp_Qpx_Api_Admin {
 		$google_api_url = get_option( Wp_Qpx_Api_Admin::$option_name . '_google_api_url' );
 		?>
 			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_url'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_url'; ?>" value="<?php echo $google_api_url; ?>" />
+			<p class="description">The main Google API Request URL</p>
 		<?php
 	}
 
@@ -261,6 +273,7 @@ class Wp_Qpx_Api_Admin {
 		$cf7_search_flight_form_id = get_option( Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id' );
 		?>
 			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id'; ?>" value="<?php echo $cf7_search_flight_form_id; ?>" />
+			<p class="description">The Imported CF7 Form ID (Recommended: 1)</p>
 		<?php
 	}
 
@@ -274,6 +287,7 @@ class Wp_Qpx_Api_Admin {
 		$cf7_reservation_form_id = get_option( Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id' );
 		?>
 			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id'; ?>" value="<?php echo $cf7_reservation_form_id; ?>" />
+			<p class="description">The Imported CF7 Form ID (Recommended: 2)</p>
 		<?php
 	}
 
@@ -287,6 +301,29 @@ class Wp_Qpx_Api_Admin {
 		$max_solutions = get_option( Wp_Qpx_Api_Admin::$option_name . '_max_solutions' );
 		?>
 			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_max_solutions'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_max_solutions'; ?>" value="<?php echo $max_solutions; ?>" />
+			<p class="description">The maximum number of solutions per request (Minimum recommended: 10)</p>
+		<?php
+	}
+
+	/**
+	 * Render the listing page field
+	 *
+	 * @since  1.0.0
+	 */
+	public function qpx_listing_page_cb() {
+
+		$listing_page = get_option( Wp_Qpx_Api_Admin::$option_name . '_listing_page' );
+		$pages = get_pages();
+		?>
+			<select style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_listing_page'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_listing_page'; ?>">
+				<option value="">Select page</option>
+				<?php if( count( $pages ) > 0 ) : ?>
+					<?php foreach ( $pages as $page ) : ?>
+						<option value="<?php echo $page->ID; ?>" <?php echo selected($listing_page, $page->ID); ?>><?php echo esc_attr($page->post_title); ?></option>
+					<?php endforeach; ?>
+				<?php endif; ?>
+			</select>
+			<p class="description">The content will be overwritten by the plugin</p>
 		<?php
 	}
 
