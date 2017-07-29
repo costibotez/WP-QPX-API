@@ -119,8 +119,9 @@ class Wp_Qpx_Api_Public {
 					}
 				}
 
-				$this->search_for_flights( $front_end_fields );
-
+				$flights_list = $this->search_for_flights( $front_end_fields );
+				// $this->save_to_localstorage( $flights_list );
+				// echo '<pre>'; print_r($flights_list); echo '</pre>'; exit;
 			}
 		}
 	}
@@ -132,8 +133,9 @@ class Wp_Qpx_Api_Public {
 	 */
 	protected function search_for_flights( $front_end_fields ) {
 
-        $key = get_option('qpx_google_api_key');			// API Access key
-        $url = get_option('qpx_google_api_url') . $key;		// API Request URL
+        $key 		= get_option( 'qpx_google_api_key' );			// API Access key
+        $url 		= get_option( 'qpx_google_api_url' ) . $key;		// API Request URL
+        $solutions 	= get_option( 'qpx_max_solutions' );
 
         $search_fields = array(
         	'request' => array(
@@ -159,8 +161,8 @@ class Wp_Qpx_Api_Public {
         				'alliance'		=> $front_end_fields['menu-6'],
         			),
         		),
-        		'solutions' => 20,
-    			'refundable' => false
+        		'solutions' => $solutions,
+				'refundable'=> false
         	)
         );
 
@@ -188,7 +190,7 @@ class Wp_Qpx_Api_Public {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($search_fields));
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         $result = curl_exec($ch);
-        echo '<pre>'; print_r($result); echo '</pre>'; exit;
+        // echo '<pre>'; print_r($result); echo '</pre>'; exit;
         $output = array();
         $output['success'] = true;
         if (curl_errno($ch)) {
@@ -198,18 +200,8 @@ class Wp_Qpx_Api_Public {
             $returnCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
             switch ($returnCode) {
                 case 200:
-                    $dom->loadXML($result);
-                    if ($dom->getElementsByTagName('status')->item(0)->textContent == "0") {
-                        //good request
-                        $output['message'] = "<p> Response Status: Passed - Message: " . $dom->getElementsByTagName('message')->item(0)->textContent;
-                        $output['message'] .= "<p> FLG NUMBER: " . $dom->getElementsByTagName('id')->item(0)->textContent;
-                        $output['flgNo'] = $dom->getElementsByTagName('id')->item(0)->textContent;
-                        update_user_meta( $user_id, 'lead_key', $output['flgNo'] );
-                        return $output;
-                    } else {
-                        $output['success'] = false;
-                        $output['message'] = "<p> API Connection: Success - Lead Entry: Failed - Reason: " . $dom->getElementsByTagName('message')->item(0)->textContent;
-                    }
+                    $output['success'] = false;
+                    $output['message'] = "<p> API Connection: Success <br> Request: Failed <br>";
                     break;
                 default:
                     $output['success'] = false;
@@ -219,8 +211,20 @@ class Wp_Qpx_Api_Public {
         }
         curl_close($ch);
 
-        return $output;
+        return $result;
 
+    }
+
+    /**
+	 * Save the most recent flight query into localStorage (way beter than cookies)
+	 *
+	 * @since    1.0.0
+	 */
+    protected function save_to_localstorage( $flights_list ) { ?>
+    	<script type="text/javascript">
+    		localStorage.setItem('flightQuery', $flights_list);
+    	</script>
+    	<?php
     }
 
 }
