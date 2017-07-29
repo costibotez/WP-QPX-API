@@ -40,6 +40,8 @@ function activate_wp_qpx_api() {
 	Wp_Qpx_Api_Activator::activate();
 }
 
+// echo plugin_basename(__FILE__); exit;
+
 add_action( 'admin_notices', 'qpx_activation_notice' );
 function qpx_activation_notice() {
 	if(!is_plugin_active('contact-form-7/wp-contact-form-7.php')) :

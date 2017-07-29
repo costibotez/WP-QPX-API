@@ -170,7 +170,47 @@ class Wp_Qpx_Api_Admin {
 			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_google_api_key' )
 		);
 
+		add_settings_field(
+			Wp_Qpx_Api_Admin::$option_name . '_google_api_url',
+			__( 'Google API URL', 'wp-qpx-api' ),
+			array( $this, Wp_Qpx_Api_Admin::$option_name . '_google_api_url_cb' ),
+			$this->plugin_name,
+			Wp_Qpx_Api_Admin::$option_name . '_general',
+			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_google_api_url' )
+		);
+
+		add_settings_field(
+			Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id',
+			__( 'CF7 Search Flight Form ID', 'wp-qpx-api' ),
+			array( $this, Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id_cb' ),
+			$this->plugin_name,
+			Wp_Qpx_Api_Admin::$option_name . '_general',
+			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id' )
+		);
+
+		add_settings_field(
+			Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id',
+			__( 'CF7 Reservation Form ID', 'wp-qpx-api' ),
+			array( $this, Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id_cb' ),
+			$this->plugin_name,
+			Wp_Qpx_Api_Admin::$option_name . '_general',
+			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id' )
+		);
+
+		add_settings_field(
+			Wp_Qpx_Api_Admin::$option_name . '_max_solutions',
+			__( 'Max Solutions', 'wp-qpx-api' ),
+			array( $this, Wp_Qpx_Api_Admin::$option_name . '_max_solutions_cb' ),
+			$this->plugin_name,
+			Wp_Qpx_Api_Admin::$option_name . '_general',
+			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_max_solutions' )
+		);
+
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_google_api_key');
+		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_google_api_url');
+		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id');
+		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id');
+		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_max_solutions');
 
 	}
 
@@ -186,7 +226,7 @@ class Wp_Qpx_Api_Admin {
 	}
 
 	/**
-	 * Render the API Key field for qpx _google_api_key option
+	 * Render the API Key field
 	 *
 	 * @since  1.0.0
 	 */
@@ -197,5 +237,73 @@ class Wp_Qpx_Api_Admin {
 			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_key'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_key'; ?>" value="<?php echo $google_api_key; ?>" />
 		<?php
 	}
+
+	/**
+	 * Render the API URL field
+	 *
+	 * @since  1.0.0
+	 */
+	public function qpx_google_api_url_cb() {
+
+		$google_api_url = get_option( Wp_Qpx_Api_Admin::$option_name . '_google_api_url' );
+		?>
+			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_url'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_google_api_url'; ?>" value="<?php echo $google_api_url; ?>" />
+		<?php
+	}
+
+	/**
+	 * Render the CF7 Search Flights Form ID field
+	 *
+	 * @since  1.0.0
+	 */
+	public function qpx_cf7_search_flight_form_id_cb() {
+
+		$cf7_search_flight_form_id = get_option( Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id' );
+		?>
+			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id'; ?>" value="<?php echo $cf7_search_flight_form_id; ?>" />
+		<?php
+	}
+
+	/**
+	 * Render the CF7 Reservation Form ID field
+	 *
+	 * @since  1.0.0
+	 */
+	public function qpx_cf7_reservation_form_id_cb() {
+
+		$cf7_reservation_form_id = get_option( Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id' );
+		?>
+			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id'; ?>" value="<?php echo $cf7_reservation_form_id; ?>" />
+		<?php
+	}
+
+	/**
+	 * Render the Max Solutions field
+	 *
+	 * @since  1.0.0
+	 */
+	public function qpx_max_solutions_cb() {
+
+		$max_solutions = get_option( Wp_Qpx_Api_Admin::$option_name . '_max_solutions' );
+		?>
+			<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_max_solutions'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_max_solutions'; ?>" value="<?php echo $max_solutions; ?>" />
+		<?php
+	}
+
+	/**
+	 * Add 'Settings' link in plugins listing
+	 *
+	 * @since  1.0.0
+	 */
+	public function add_action_links ( $links ) {
+
+ 		$mylinks = array(
+ 			'<a href="' . admin_url( 'options-general.php?page=wp-qpx-api' ) . '">Settings</a>',
+ 		);
+
+		return array_merge( $links, $mylinks );
+
+	}
+
 
 }

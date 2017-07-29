@@ -100,4 +100,100 @@ class Wp_Qpx_Api_Public {
 
 	}
 
+	/**
+	 * Track Contact Form 7 forms submissions
+	 *
+	 * @since    1.0.0
+	 */
+	public function track_cf7_post() {
+		if ( $_POST ) {
+			if ( isset( $_POST['_wpcf7'] ) && ( !empty( $_POST['_wpcf7'] ) ) ) {	// if it's a CF7 submission
+
+			// echo '<pre>'; print_r($_POST); echo '</pre>'; exit;
+				$search_form_id = get_option('qpx_cf7_search_flight_form_id');			// API Request URL
+				$front_end_fields = array();	// empty array by default
+
+				foreach ($_POST as $key => $value) {
+					if ( strpos( $key, '_wpcf7' ) === false ) {	// filter ONLY front-end fields
+						$front_end_fields[strtolower($key)] = $value;
+					}
+				}
+
+				$this->search_for_flights( $front_end_fields );
+
+			}
+		}
+	}
+
+	/**
+	 * Send CF7 submissions to FLG360
+	 *
+	 * @since    1.0.0
+	 */
+	protected function search_for_flights( $front_end_fields ) {
+
+        $key = get_option('qpx_google_api_key');			// API Access key
+        $url = get_option('qpx_google_api_url') . $key;		// API Request URL
+
+        $search_fields = array();							// empty search fields by default
+
+        $search_fields['request']['passengers']['adultCount'] = $front_end_fields['menu-1'];
+        $search_fields['request']['passengers']['childCount'] = $front_end_fields['menu-2'];
+        $search_fields['request']['passengers']['infantInSeatCount'] = $front_end_fields['menu-3'];
+        $search_fields['request']['passengers']['seniorCount'] = $front_end_fields['menu-4'];
+        $search_fields['request']['slice'][0]['origin'] = $front_end_fields['leaving-from'];
+        $search_fields['request']['slice'][0]['destination'] = $front_end_fields['going-to'];
+        $search_fields['request']['slice'][0]['date'] = $front_end_fields['date-1'];
+        $search_fields['request']['slice'][0]['preferredCabin'] = $front_end_fields['date-1'];
+        $search_fields['request']['slice'][0]['alliance'] = $front_end_fields['date-1'];
+
+        $search_fields['request']['slice'][1]['origin'] = $front_end_fields['going-to'];
+        $search_fields['request']['slice'][1]['destination'] = $front_end_fields['leaving-from'];
+        $search_fields['request']['slice'][1]['date'] = $front_end_fields['date-2'];
+        $search_fields['request']['slice'][1]['preferredCabin'] = $front_end_fields['menu-5'];
+        $search_fields['request']['slice'][1]['alliance'] = $front_end_fields['menu-6'];
+
+        // echo '<pre>'; print_r(json_encode($search_fields)); echo '</pre>'; exit;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($search_fields));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        $result = curl_exec($ch);
+        echo '<pre>'; print_r($result); echo '</pre>'; exit;
+        $output = array();
+        $output['success'] = true;
+        if (curl_errno($ch)) {
+            $output['success'] = false;
+            $output['message'] = 'ERROR from curl_errno -> ' . curl_errno($ch) . ': ' . curl_error($ch);
+        } else {
+            $returnCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            switch ($returnCode) {
+                case 200:
+                    $dom->loadXML($result);
+                    if ($dom->getElementsByTagName('status')->item(0)->textContent == "0") {
+                        //good request
+                        $output['message'] = "<p> Response Status: Passed - Message: " . $dom->getElementsByTagName('message')->item(0)->textContent;
+                        $output['message'] .= "<p> FLG NUMBER: " . $dom->getElementsByTagName('id')->item(0)->textContent;
+                        $output['flgNo'] = $dom->getElementsByTagName('id')->item(0)->textContent;
+                        update_user_meta( $user_id, 'lead_key', $output['flgNo'] );
+                        return $output;
+                    } else {
+                        $output['success'] = false;
+                        $output['message'] = "<p> API Connection: Success - Lead Entry: Failed - Reason: " . $dom->getElementsByTagName('message')->item(0)->textContent;
+                    }
+                    break;
+                default:
+                    $output['success'] = false;
+                    $output['message'] = '<p>HTTP ERROR -> ' . $returnCode;
+                    break;
+            }
+        }
+        curl_close($ch);
+
+        return $output;
+
+    }
+
 }
