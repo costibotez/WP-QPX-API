@@ -135,23 +135,50 @@ class Wp_Qpx_Api_Public {
         $key = get_option('qpx_google_api_key');			// API Access key
         $url = get_option('qpx_google_api_url') . $key;		// API Request URL
 
-        $search_fields = array();							// empty search fields by default
+        $search_fields = array(
+        	'request' => array(
+        		'passengers' => array(
+        			'adultCount' 		=> $front_end_fields['menu-1'],
+        			'childCount' 		=> $front_end_fields['menu-2'],
+        			'infantInSeatCount' => $front_end_fields['menu-3'],
+        			'seniorCount' 		=> $front_end_fields['menu-4'],
+        		),
+        		'slice'	=> array(
+        			0 => array(
+        				'origin' 		=> $front_end_fields['leaving-from'],
+        				'destination' 	=> $front_end_fields['going-to'],
+        				'date'			=> $front_end_fields['date-1'],
+        				'preferredCabin'=> $front_end_fields['menu-5'],
+        				'alliance'		=> $front_end_fields['menu-6'],
+        			),
+        			1 => array(
+        				'origin' 		=> $front_end_fields['going-to'],
+        				'destination' 	=> $front_end_fields['leaving-from'],
+        				'date'			=> $front_end_fields['date-2'],
+        				'preferredCabin'=> $front_end_fields['menu-5'],
+        				'alliance'		=> $front_end_fields['menu-6'],
+        			),
+        		),
+        		'solutions' => 20,
+    			'refundable' => false
+        	)
+        );
 
-        $search_fields['request']['passengers']['adultCount'] = $front_end_fields['menu-1'];
-        $search_fields['request']['passengers']['childCount'] = $front_end_fields['menu-2'];
-        $search_fields['request']['passengers']['infantInSeatCount'] = $front_end_fields['menu-3'];
-        $search_fields['request']['passengers']['seniorCount'] = $front_end_fields['menu-4'];
-        $search_fields['request']['slice'][0]['origin'] = $front_end_fields['leaving-from'];
-        $search_fields['request']['slice'][0]['destination'] = $front_end_fields['going-to'];
-        $search_fields['request']['slice'][0]['date'] = $front_end_fields['date-1'];
-        $search_fields['request']['slice'][0]['preferredCabin'] = $front_end_fields['date-1'];
-        $search_fields['request']['slice'][0]['alliance'] = $front_end_fields['date-1'];
+        // $search_fields['request']['passengers']['adultCount'] = $front_end_fields['menu-1'];
+        // $search_fields['request']['passengers']['childCount'] = $front_end_fields['menu-2'];
+        // $search_fields['request']['passengers']['infantInSeatCount'] = $front_end_fields['menu-3'];
+        // $search_fields['request']['passengers']['seniorCount'] = $front_end_fields['menu-4'];
+        // $search_fields['request']['slice'][0]['origin'] = $front_end_fields['leaving-from'];
+        // $search_fields['request']['slice'][0]['destination'] = $front_end_fields['going-to'];
+        // $search_fields['request']['slice'][0]['date'] = $front_end_fields['date-1'];
+        // $search_fields['request']['slice'][0]['preferredCabin'] = $front_end_fields['date-1'];
+        // $search_fields['request']['slice'][0]['alliance'] = $front_end_fields['date-1'];
 
-        $search_fields['request']['slice'][1]['origin'] = $front_end_fields['going-to'];
-        $search_fields['request']['slice'][1]['destination'] = $front_end_fields['leaving-from'];
-        $search_fields['request']['slice'][1]['date'] = $front_end_fields['date-2'];
-        $search_fields['request']['slice'][1]['preferredCabin'] = $front_end_fields['menu-5'];
-        $search_fields['request']['slice'][1]['alliance'] = $front_end_fields['menu-6'];
+        // $search_fields['request']['slice'][1]['origin'] = $front_end_fields['going-to'];
+        // $search_fields['request']['slice'][1]['destination'] = $front_end_fields['leaving-from'];
+        // $search_fields['request']['slice'][1]['date'] = $front_end_fields['date-2'];
+        // $search_fields['request']['slice'][1]['preferredCabin'] = $front_end_fields['menu-5'];
+        // $search_fields['request']['slice'][1]['alliance'] = $front_end_fields['menu-6'];
 
         // echo '<pre>'; print_r(json_encode($search_fields)); echo '</pre>'; exit;
         $ch = curl_init();
