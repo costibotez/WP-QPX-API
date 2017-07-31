@@ -215,12 +215,32 @@ class Wp_Qpx_Api_Admin {
 			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_listing_page' )
 		);
 
+		add_settings_field(
+			Wp_Qpx_Api_Admin::$option_name . '_no_featured_flights',
+			__( 'Number of featured flights', 'wp-qpx-api' ),
+			array( $this, Wp_Qpx_Api_Admin::$option_name . '_no_featured_flights_cb' ),
+			$this->plugin_name,
+			Wp_Qpx_Api_Admin::$option_name . '_general',
+			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_no_featured_flights' )
+		);
+
+		add_settings_field(
+			Wp_Qpx_Api_Admin::$option_name . '_show_alternative_flights',
+			__( 'Show alternative flights?', 'wp-qpx-api' ),
+			array( $this, Wp_Qpx_Api_Admin::$option_name . '_show_alternative_flights_cb' ),
+			$this->plugin_name,
+			Wp_Qpx_Api_Admin::$option_name . '_general',
+			array( 'label_for' => Wp_Qpx_Api_Admin::$option_name . '_show_alternative_flights' )
+		);
+
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_google_api_key');
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_google_api_url');
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_cf7_search_flight_form_id');
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_cf7_reservation_form_id');
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_max_solutions');
 		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_listing_page');
+		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_no_featured_flights');
+		register_setting( $this->plugin_name, Wp_Qpx_Api_Admin::$option_name . '_show_alternative_flights');
 
 	}
 
@@ -324,6 +344,34 @@ class Wp_Qpx_Api_Admin {
 				<?php endif; ?>
 			</select>
 			<p class="description">The content will be overwritten by the plugin</p>
+		<?php
+	}
+
+	/**
+	 * Render the number of featured flights field
+	 *
+	 * @since  1.0.0
+	 */
+	public function qpx_no_featured_flights_cb() {
+
+		$no_featured_flights = get_option( Wp_Qpx_Api_Admin::$option_name . '_no_featured_flights' );
+		?>
+		<input type="text" style="width:350px" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_no_featured_flights'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_no_featured_flights'; ?>" value="<?php echo $no_featured_flights; ?>" />
+			<p class="description">The first X highlighted flights from listing (Recommended: 3)</p>
+		<?php
+	}
+
+	/**
+	 * Render the alternative flights field
+	 *
+	 * @since  1.0.0
+	 */
+	public function qpx_show_alternative_flights_cb() {
+
+		$show_alternative_flights = get_option( Wp_Qpx_Api_Admin::$option_name . '_show_alternative_flights' );
+		?>
+		<input type="checkbox" name="<?php echo Wp_Qpx_Api_Admin::$option_name . '_show_alternative_flights'; ?>" id="<?php echo Wp_Qpx_Api_Admin::$option_name . '_show_alternative_flights'; ?>" value="1" <?php checked($show_alternative_flights, 1); ?>"/>
+			<p class="description">Check if you want to list the alternatives flights (Recommended: Yes)</p>
 		<?php
 	}
 

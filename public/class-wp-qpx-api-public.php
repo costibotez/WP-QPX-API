@@ -121,13 +121,13 @@ class Wp_Qpx_Api_Public {
 
 				$flights_list = $this->search_for_flights( $front_end_fields );
 				$this->save_to_file( $flights_list );
-				echo '<pre>'; print_r($flights_list); echo '</pre>'; exit;
+				// echo '<pre>'; print_r($flights_list); echo '</pre>'; exit;
 			}
 		}
 	}
 
 	/**
-	 * Send CF7 submissions to FLG360
+	 * Send CF7 submissions to QPX
 	 *
 	 * @since    1.0.0
 	 */
@@ -209,22 +209,49 @@ class Wp_Qpx_Api_Public {
     }
 
 	/**
-	 * Redirect to custom 'Thank you page'
+	 * Redirect to custom 'Listing page'
 	 *
 	 * @since    1.0.0
 	 */
     public function add_this_script_footer() {
 
-    	if ( !empty( get_option( 'qpx_thankyou_page' ) ) ) {
-	    	$thankyou_page = get_permalink( get_option( 'qpx_thankyou_page' ) ); ?>
+    	if ( !empty( get_option( 'qpx_listing_page' ) ) ) {
+	    	$listing_page = get_permalink( get_option( 'qpx_listing_page' ) ); ?>
 
 			<script>
 			document.addEventListener( 'wpcf7mailsent', function( event ) {
-			    location = '<?php echo esc_attr( $thankyou_page ); ?>';
+			    location = '<?php echo esc_attr( $listing_page ); ?>';
 			}, false );
 			</script>
 
 		<?php }
+
+	}
+
+	/**
+	 * Redirect to
+	 *
+	 * @since    1.0.0
+	 */
+	public function parse_search_request() {
+
+		$request = file_get_contents( plugin_dir_path( __FILE__ ) . 'request.txt' );
+		$trip_options = json_decode($request);
+		// echo '<pre>'; print_r($trip_options->trips->tripOption); echo '</pre>';
+		include_once 'partials/wp-qpx-api-public-display.php';
+
+	}
+
+	public static function convert_minutes_to_hours( $time, $format = '%02dh %02dmin' ) {
+
+	    if ($time < 1) {
+	        return;
+	    }
+
+	    $hours = floor($time / 60);
+	    $minutes = ($time % 60);
+
+	    return sprintf($format, $hours, $minutes);
 
 	}
 
